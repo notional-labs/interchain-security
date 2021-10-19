@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"fmt"
 
-	"github.com/cosmos/interchain-security/app"
+	"github.com/cosmos/interchain-security/parent/app"
 	"github.com/cosmos/interchain-security/x/ccv/types"
 )
 
