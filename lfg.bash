@@ -36,6 +36,14 @@ export PARENT_NODE=tcp://127.0.0.1:10001
 
 
 cargo install --path .
-screen -s child start
-screen -s parent start
+hermes keys restore child -m "panic birth ladder wild audit grocery poverty inhale police sport dad error summer ozone giggle witness bonus uncover arrest broccoli miss eyebrow tell belt"
+hermes keys restore parent -m "empower lion curtain bitter immune human skin drip remember moon easy cat omit bubble anger item fetch broken bike naive leave one wish depart"
+hermes client create parent child
+hermes client create child parent
+
+
+rly keys restore child child "panic birth ladder wild audit grocery poverty inhale police sport dad error summer ozone giggle witness bonus uncover arrest broccoli miss eyebrow tell belt"
+rly keys restore parent parent "empower lion curtain bitter immune human skin drip remember moon easy cat omit bubble anger item fetch broken bike naive leave one wish depart"
+
+
 hermes start
