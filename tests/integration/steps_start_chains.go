@@ -4,6 +4,8 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
 )
 
+const consumerName = "consumer"
+
 func stepStartProviderChain() []Step {
 	return []Step{
 		{
@@ -92,7 +94,7 @@ func stepsStartConsumerChain(consumerName string, proposalIndex, chainIndex uint
 			state: State{},
 		},
 		{
-			// op should fail - key allready assigned by another validator
+			// op should fail - key already assigned by another validator
 			action: assignConsumerPubKeyAction{
 				chain:     chainID(consumerName),
 				validator: validatorID("bob"),
@@ -217,7 +219,7 @@ func stepsStartChains(consumerNames []string, setupTransferChans bool) []Step {
 	return s
 }
 
-func stepsAssignConsumerKeyOnStartedChain(consumerName, validator string) []Step {
+func stepsAssignConsumerKeyOnStartedChain() []Step {
 	return []Step{
 		{
 			action: assignConsumerPubKeyAction{

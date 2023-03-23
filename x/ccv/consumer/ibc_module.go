@@ -15,7 +15,6 @@ import (
 	"github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 	consumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
-	"github.com/cosmos/interchain-security/x/ccv/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 )
 
@@ -31,11 +30,10 @@ func (am AppModule) OnChanOpenInit(
 	counterparty channeltypes.Counterparty,
 	version string,
 ) (string, error) {
-
 	// set to the default version if the provided version is empty according to the ICS26 spec
 	// https://github.com/cosmos/ibc/blob/main/spec/core/ics-026-routing-module/README.md#technical-specification
 	if strings.TrimSpace(version) == "" {
-		version = types.Version
+		version = ccv.Version
 	}
 
 	// ensure provider channel hasn't already been created
@@ -290,7 +288,6 @@ func (am AppModule) OnTimeoutPacket(
 	packet channeltypes.Packet,
 	_ sdk.AccAddress,
 ) error {
-
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			ccv.EventTypeTimeout,

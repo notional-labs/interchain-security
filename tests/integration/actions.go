@@ -27,6 +27,8 @@ type SendTokensAction struct {
 	amount uint
 }
 
+const done = "done!!!!!!!!"
+
 func (tr TestRun) sendTokens(
 	action SendTokensAction,
 	verbose bool,
@@ -51,7 +53,6 @@ func (tr TestRun) sendTokens(
 		fmt.Println("sendTokens cmd:", cmd.String())
 	}
 	bz, err := cmd.CombinedOutput()
-
 	if err != nil {
 		log.Fatal(err, "\n", string(bz))
 	}
@@ -150,7 +151,7 @@ func (tr TestRun) startChain(
 		if verbose {
 			fmt.Println("startChain: " + out)
 		}
-		if out == "done!!!!!!!!" {
+		if out == done {
 			break
 		}
 	}
@@ -161,7 +162,8 @@ func (tr TestRun) startChain(
 	tr.addChainToRelayer(addChainToRelayerAction{
 		chain:     action.chain,
 		validator: action.validators[0].id,
-	}, verbose)
+	},
+	)
 }
 
 type submitTextProposalAction struct {
@@ -175,7 +177,6 @@ type submitTextProposalAction struct {
 
 func (tr TestRun) submitTextProposal(
 	action submitTextProposalAction,
-	verbose bool,
 ) {
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
 	bz, err := exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[action.chain].binaryName,
@@ -194,7 +195,6 @@ func (tr TestRun) submitTextProposal(
 		`-b`, `block`,
 		`-y`,
 	).CombinedOutput()
-
 	if err != nil {
 		log.Fatal(err, "\n", string(bz))
 	}
@@ -211,7 +211,6 @@ type submitConsumerAdditionProposalAction struct {
 
 func (tr TestRun) submitConsumerAdditionProposal(
 	action submitConsumerAdditionProposalAction,
-	verbose bool,
 ) {
 	spawnTime := tr.containerConfig.now.Add(time.Duration(action.spawnTime) * time.Millisecond)
 	params := consumertypes.DefaultParams()
@@ -281,7 +280,6 @@ type submitConsumerRemovalProposalAction struct {
 
 func (tr TestRun) submitConsumerRemovalProposal(
 	action submitConsumerRemovalProposalAction,
-	verbose bool,
 ) {
 	stopTime := tr.containerConfig.now.Add(action.stopTimeOffset)
 	prop := client.ConsumerRemovalProposalJSON{
@@ -354,7 +352,6 @@ type paramChangeJSON struct {
 
 func (tr TestRun) submitParamChangeProposal(
 	action submitParamChangeProposalAction,
-	verbose bool,
 ) {
 	prop := paramChangeProposalJSON{
 		Title:       "Param change",
@@ -412,7 +409,7 @@ type submitEquivocationProposalAction struct {
 	from      validatorID
 }
 
-func (tr TestRun) submitEquivocationProposal(action submitEquivocationProposalAction, verbose bool) {
+func (tr TestRun) submitEquivocationProposal(action submitEquivocationProposalAction) {
 	val := tr.validatorConfigs[action.validator]
 	providerChain := tr.chainConfigs[chainID("provi")]
 
@@ -480,7 +477,6 @@ type voteGovProposalAction struct {
 
 func (tr TestRun) voteGovProposal(
 	action voteGovProposalAction,
-	verbose bool,
 ) {
 	var wg sync.WaitGroup
 	for i, val := range action.from {
@@ -503,7 +499,6 @@ func (tr TestRun) voteGovProposal(
 				`-b`, `block`,
 				`-y`,
 			).CombinedOutput()
-
 			if err != nil {
 				log.Fatal(err, "\n", string(bz))
 			}
@@ -539,7 +534,6 @@ func (tr TestRun) startConsumerChain(
 	}
 
 	bz, err := cmd.CombinedOutput()
-
 	if err != nil {
 		log.Fatal(err, "\n", string(bz))
 	}
@@ -590,7 +584,6 @@ websocket_addr = "%s"
 
 func (tr TestRun) addChainToRelayer(
 	action addChainToRelayerAction,
-	verbose bool,
 ) {
 	queryNodeIP := tr.getQueryNodeIP(action.chain)
 	chainId := tr.chainConfigs[action.chain].chainId
@@ -675,7 +668,7 @@ func (tr TestRun) addIbcConnection(
 		if verbose {
 			fmt.Println("addIbcConnection: " + out)
 		}
-		if out == "done!!!!!!!!" {
+		if out == done {
 			break
 		}
 	}
@@ -729,7 +722,7 @@ func (tr TestRun) addIbcChannel(
 		if verbose {
 			fmt.Println("addIBCChannel: " + out)
 		}
-		if out == "done!!!!!!!!" {
+		if out == done {
 			break
 		}
 	}
@@ -751,7 +744,6 @@ type transferChannelCompleteAction struct {
 
 func (tr TestRun) transferChannelComplete(
 	action transferChannelCompleteAction,
-	verbose bool,
 ) {
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with chanOpenTryCmd arguments.
 	chanOpenTryCmd := exec.Command("docker", "exec", tr.containerConfig.instanceName, "hermes",
@@ -841,7 +833,6 @@ func (tr TestRun) relayPackets(
 		log.Println("relayPackets cmd:", cmd.String())
 	}
 	bz, err := cmd.CombinedOutput()
-
 	if err != nil {
 		log.Fatal(err, "\n", string(bz))
 	}
@@ -1018,7 +1009,6 @@ func (tr TestRun) invokeDowntimeSlash(action downtimeSlashAction, verbose bool) 
 
 // Sets validator downtime by setting the virtual ethernet interface of a node to "up" or "down"
 func (tr TestRun) setValidatorDowntime(chain chainID, validator validatorID, down bool, verbose bool) {
-
 	var lastArg string
 	if down {
 		lastArg = "down"
@@ -1055,7 +1045,6 @@ type unjailValidatorAction struct {
 
 // Sends an unjail transaction to the provider chain
 func (tr TestRun) unjailValidator(action unjailValidatorAction, verbose bool) {
-
 	// wait a block to be sure downtime_jail_duration has elapsed
 	tr.waitBlocks(action.provider, 1, time.Minute)
 
@@ -1084,7 +1073,7 @@ func (tr TestRun) unjailValidator(action unjailValidatorAction, verbose bool) {
 	}
 
 	// wait for 1 blocks to make sure that tx got included
-	// in a block and packets commited before proceeding
+	// in a block and packets committed before proceeding
 	tr.waitBlocks(action.provider, 1, time.Minute)
 }
 
@@ -1096,7 +1085,6 @@ type registerRepresentativeAction struct {
 
 func (tr TestRun) registerRepresentative(
 	action registerRepresentativeAction,
-	verbose bool,
 ) {
 	var wg sync.WaitGroup
 	for i, val := range action.representatives {
@@ -1134,7 +1122,6 @@ func (tr TestRun) registerRepresentative(
 				`-b`, `block`,
 				`-y`,
 			).CombinedOutput()
-
 			if err != nil {
 				log.Fatal(err, "\n", string(bz))
 			}
@@ -1162,14 +1149,12 @@ type doublesignSlashAction struct {
 
 func (tr TestRun) invokeDoublesignSlash(
 	action doublesignSlashAction,
-	verbose bool,
 ) {
 	chainConfig := tr.chainConfigs[action.chain]
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
 	bz, err := exec.Command("docker", "exec", tr.containerConfig.instanceName, "/bin/bash",
 		"/testnet-scripts/cause-doublesign.sh", chainConfig.binaryName, string(action.validator),
 		string(chainConfig.chainId), chainConfig.ipPrefix).CombinedOutput()
-
 	if err != nil {
 		log.Fatal(err, "\n", string(bz))
 	}
@@ -1262,7 +1247,7 @@ func (tr TestRun) assignConsumerPubKey(action assignConsumerPubKeyAction, verbos
 			if verbose {
 				fmt.Println("assign key - reconfigure: " + out)
 			}
-			if out == "done!!!!!!!!" {
+			if out == done {
 				break
 			}
 		}
@@ -1290,7 +1275,6 @@ func (tr TestRun) waitForSlashThrottleDequeue(
 	action slashThrottleDequeue,
 	verbose bool,
 ) {
-
 	timeout := time.Now().Add(action.timeout)
 	initialGlobalQueueSize := int(tr.getGlobalSlashQueueSize())
 
@@ -1304,7 +1288,7 @@ func (tr TestRun) waitForSlashThrottleDequeue(
 			fmt.Printf("waiting for packed queue size to reach: %d - current: %d\n", action.nextQueueSize, globalQueueSize)
 		}
 
-		if globalQueueSize == chainQueueSize && globalQueueSize == action.nextQueueSize {
+		if globalQueueSize == chainQueueSize && globalQueueSize == action.nextQueueSize { //nolint:gocritic // if global queue size equals chainqueuesize AND globalQueueSize equals nextQueueSize (the comparison is valid)
 			break
 		}
 
