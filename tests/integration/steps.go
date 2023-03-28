@@ -1,7 +1,7 @@
 package main
 
 type Step struct {
-	action any
+	action interface{}
 	state  State
 }
 
@@ -17,7 +17,7 @@ var happyPathSteps = concatSteps(
 	stepsStartChains([]string{"consu"}, false),
 	stepsDelegate("consu"),
 	stepsAssignConsumerKeyOnStartedChain("consu", "bob"),
-	stepsUnbond(),
+	stepsUnbond("consu"),
 	stepsRedelegate("consu"),
 	stepsDowntime("consu"),
 	stepsRejectEquivocationProposal("consu", 2),   // prop to tombstone bob is rejected

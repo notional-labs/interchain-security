@@ -5,6 +5,7 @@ import (
 	"time"
 
 	testkeeper "github.com/cosmos/interchain-security/testutil/keeper"
+	"github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	consumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 	"github.com/stretchr/testify/require"
@@ -14,9 +15,9 @@ import (
 func TestParams(t *testing.T) {
 	consumerKeeper, ctx, ctrl, _ := testkeeper.GetConsumerKeeperAndCtx(t, testkeeper.NewInMemKeeperParams(t))
 	defer ctrl.Finish()
-	consumerKeeper.SetParams(ctx, consumertypes.DefaultParams())
+	consumerKeeper.SetParams(ctx, types.DefaultParams())
 
-	expParams := consumertypes.NewParams(
+	expParams := types.NewParams(
 		false,
 		1000,
 		"",
@@ -31,7 +32,7 @@ func TestParams(t *testing.T) {
 	params := consumerKeeper.GetParams(ctx)
 	require.Equal(t, expParams, params)
 
-	newParams := consumertypes.NewParams(false, 1000,
+	newParams := types.NewParams(false, 1000,
 		"channel-2", "cosmos19pe9pg5dv9k5fzgzmsrgnw9rl9asf7ddwhu7lm",
 		7*24*time.Hour, 25*time.Hour, "0.5", 500, 24*21*time.Hour)
 	consumerKeeper.SetParams(ctx, newParams)

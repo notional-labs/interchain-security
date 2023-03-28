@@ -38,10 +38,10 @@ func NewMsgAssignConsumerKey(chainID string, providerValidatorAddress sdk.ValAdd
 }
 
 // Route implements the sdk.Msg interface.
-func (MsgAssignConsumerKey) Route() string { return RouterKey }
+func (msg MsgAssignConsumerKey) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface.
-func (MsgAssignConsumerKey) Type() string {
+func (msg MsgAssignConsumerKey) Type() string {
 	return TypeMsgAssignConsumerKey
 }
 

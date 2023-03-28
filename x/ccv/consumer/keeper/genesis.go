@@ -53,6 +53,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state *consumertypes.GenesisState) 
 
 		// set default value for valset update ID
 		k.SetHeightValsetUpdateID(ctx, uint64(ctx.BlockHeight()), uint64(0))
+
 	} else {
 		// chain restarts with the CCV channel established
 		if state.ProviderChannelId != "" {
@@ -70,6 +71,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state *consumertypes.GenesisState) 
 				}
 				k.SetOutstandingDowntime(ctx, consAddr)
 			}
+
 			// set last transmission block height
 			k.SetLastTransmissionBlockHeight(ctx, state.LastTransmissionBlockHeight)
 		}
@@ -85,10 +87,12 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state *consumertypes.GenesisState) 
 
 		// set provider client id
 		k.SetProviderClientID(ctx, state.ProviderClientId)
+
 	}
 
 	// populate cross chain validators states with initial valset
 	k.ApplyCCValidatorChanges(ctx, state.InitialValSet)
+
 	return state.InitialValSet
 }
 
@@ -143,5 +147,5 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) (genesis *consumertypes.GenesisSt
 		)
 	}
 
-	return genesis
+	return
 }

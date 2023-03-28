@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 	consumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	"github.com/cosmos/interchain-security/x/ccv/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 )
 
@@ -33,7 +34,7 @@ func (am AppModule) OnChanOpenInit(
 	// set to the default version if the provided version is empty according to the ICS26 spec
 	// https://github.com/cosmos/ibc/blob/main/spec/core/ics-026-routing-module/README.md#technical-specification
 	if strings.TrimSpace(version) == "" {
-		version = ccv.Version
+		version = types.Version
 	}
 
 	// ensure provider channel hasn't already been created
@@ -72,7 +73,7 @@ func (am AppModule) OnChanOpenInit(
 // validateCCVChannelParams validates a ccv channel
 func validateCCVChannelParams(
 	ctx sdk.Context,
-	ccvkeeper keeper.Keeper,
+	keeper keeper.Keeper,
 	order channeltypes.Order,
 	portID string,
 	version string,
@@ -83,7 +84,7 @@ func validateCCVChannelParams(
 	}
 
 	// the port ID must match the port ID the CCV module is bounded to
-	boundPort := ccvkeeper.GetPort(ctx)
+	boundPort := keeper.GetPort(ctx)
 	if boundPort != portID {
 		return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid port: %s, expected %s", portID, boundPort)
 	}
@@ -96,15 +97,15 @@ func validateCCVChannelParams(
 }
 
 // OnChanOpenTry implements the IBCModule interface
-func (AppModule) OnChanOpenTry(
-	_ sdk.Context,
-	_ channeltypes.Order,
-	_ []string,
-	_ string,
-	_ string,
-	_ *capabilitytypes.Capability,
-	_ channeltypes.Counterparty,
-	_ string,
+func (am AppModule) OnChanOpenTry(
+	ctx sdk.Context,
+	order channeltypes.Order,
+	connectionHops []string,
+	portID,
+	channelID string,
+	chanCap *capabilitytypes.Capability,
+	counterparty channeltypes.Counterparty,
+	counterpartyVersion string,
 ) (string, error) {
 	return "", sdkerrors.Wrap(ccv.ErrInvalidChannelFlow, "channel handshake must be initiated by consumer chain")
 }
@@ -178,10 +179,10 @@ func (am AppModule) OnChanOpenAck(
 }
 
 // OnChanOpenConfirm implements the IBCModule interface
-func (AppModule) OnChanOpenConfirm(
-	_ sdk.Context,
-	_ string,
-	_ string,
+func (am AppModule) OnChanOpenConfirm(
+	ctx sdk.Context,
+	portID,
+	channelID string,
 ) error {
 	return sdkerrors.Wrap(ccv.ErrInvalidChannelFlow, "channel handshake must be initiated by consumer chain")
 }
@@ -189,7 +190,7 @@ func (AppModule) OnChanOpenConfirm(
 // OnChanCloseInit implements the IBCModule interface
 func (am AppModule) OnChanCloseInit(
 	ctx sdk.Context,
-	_ string,
+	portID,
 	channelID string,
 ) error {
 	// allow relayers to close duplicate OPEN channels, if the provider channel has already been established
@@ -200,10 +201,10 @@ func (am AppModule) OnChanCloseInit(
 }
 
 // OnChanCloseConfirm implements the IBCModule interface
-func (AppModule) OnChanCloseConfirm(
-	_ sdk.Context,
-	_ string,
-	_ string,
+func (am AppModule) OnChanCloseConfirm(
+	ctx sdk.Context,
+	portID,
+	channelID string,
 ) error {
 	return nil
 }
@@ -283,9 +284,9 @@ func (am AppModule) OnAcknowledgementPacket(
 // OnTimeoutPacket implements the IBCModule interface
 // the CCV channel state is changed to CLOSED
 // by the IBC module as the channel is ORDERED
-func (AppModule) OnTimeoutPacket(
+func (am AppModule) OnTimeoutPacket(
 	ctx sdk.Context,
-	_ channeltypes.Packet,
+	packet channeltypes.Packet,
 	_ sdk.AccAddress,
 ) error {
 	ctx.EventManager().EmitEvent(

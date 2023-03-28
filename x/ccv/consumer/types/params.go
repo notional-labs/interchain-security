@@ -57,7 +57,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates new consumer parameters with provided arguments
 func NewParams(enabled bool, blocksPerDistributionTransmission int64,
 	distributionTransmissionChannel, providerFeePoolAddrStr string,
-	ccvTimeoutPeriod, transferTimeoutPeriod time.Duration,
+	ccvTimeoutPeriod time.Duration, transferTimeoutPeriod time.Duration,
 	consumerRedistributionFraction string, historicalEntries int64,
 	consumerUnbondingPeriod time.Duration,
 ) Params {
@@ -115,8 +115,10 @@ func (p Params) Validate() error {
 	if err := ccvtypes.ValidatePositiveInt64(p.HistoricalEntries); err != nil {
 		return err
 	}
-	err := ccvtypes.ValidateDuration(p.UnbondingPeriod)
-	return err
+	if err := ccvtypes.ValidateDuration(p.UnbondingPeriod); err != nil {
+		return err
+	}
+	return nil
 }
 
 // ParamSetPairs implements params.ParamSet
@@ -142,7 +144,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
-func validateDistributionTransmissionChannel(i any) error {
+func validateDistributionTransmissionChannel(i interface{}) error {
 	// Accept empty string as valid, since this will be the default value on genesis
 	if i == "" {
 		return nil
@@ -151,7 +153,7 @@ func validateDistributionTransmissionChannel(i any) error {
 	return ccvtypes.ValidateChannelIdentifier(i)
 }
 
-func validateProviderFeePoolAddrStr(i any) error {
+func validateProviderFeePoolAddrStr(i interface{}) error {
 	// Accept empty string as valid, since this will be the default value on genesis
 	if i == "" {
 		return nil

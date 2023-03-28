@@ -20,6 +20,7 @@ import (
 	consumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	providerkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	"github.com/cosmos/interchain-security/x/ccv/types"
 	ccvtypes "github.com/cosmos/interchain-security/x/ccv/types"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -225,7 +226,7 @@ func SetupForStoppingConsumerChain(t *testing.T, ctx sdk.Context,
 	expectations := GetMocksForCreateConsumerClient(ctx, &mocks,
 		"chainID", clienttypes.NewHeight(4, 5))
 	expectations = append(expectations, GetMocksForSetConsumerChain(ctx, &mocks, "chainID")...)
-	expectations = append(expectations, GetMocksForStopConsumerChain(&mocks)...)
+	expectations = append(expectations, GetMocksForStopConsumerChain(ctx, &mocks)...)
 
 	gomock.InOrder(expectations...)
 
@@ -248,7 +249,7 @@ func GetTestConsumerAdditionProp() *providertypes.ConsumerAdditionProposal {
 		consumertypes.DefaultConsumerRedistributeFrac,
 		consumertypes.DefaultBlocksPerDistributionTransmission,
 		consumertypes.DefaultHistoricalEntries,
-		ccvtypes.DefaultCCVTimeoutPeriod,
+		types.DefaultCCVTimeoutPeriod,
 		consumertypes.DefaultTransferTimeoutPeriod,
 		consumertypes.DefaultConsumerUnbondingPeriod,
 	).(*providertypes.ConsumerAdditionProposal)

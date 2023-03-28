@@ -96,7 +96,7 @@ func TestInitGenesis(t *testing.T) {
 
 		appModule := provider.NewAppModule(&providerKeeper)
 		genState := types.NewGenesisState(
-			providerKeeper.GetValidatorSetUpdateID(ctx),
+			providerKeeper.GetValidatorSetUpdateId(ctx),
 			nil,
 			tc.consumerStates,
 			nil,
@@ -160,7 +160,7 @@ func TestInitGenesis(t *testing.T) {
 
 		numStatesCounted := 0
 		for _, state := range tc.consumerStates {
-			numStatesCounted++
+			numStatesCounted += 1
 			channelID, found := providerKeeper.GetChainToChannel(ctx, state.ChainId)
 			require.True(t, found)
 			require.Equal(t, state.ChannelId, channelID)

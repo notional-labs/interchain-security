@@ -41,7 +41,7 @@ func NewTendermintConfig() *TendermintConfig {
 	}
 }
 
-func (*TendermintConfig) GetClientType() string {
+func (tmcfg *TendermintConfig) GetClientType() string {
 	return exported.Tendermint
 }
 

@@ -81,7 +81,7 @@ func stepsDelegate(consumerName string) []Step {
 }
 
 // stepsDelegate tests unbonding and resulting validator power changes.
-func stepsUnbond() []Step {
+func stepsUnbond(consumerName string) []Step {
 	return []Step{
 		{
 			action: unbondTokensAction{

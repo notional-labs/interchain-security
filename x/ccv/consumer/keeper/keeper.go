@@ -18,6 +18,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/interchain-security/x/ccv/consumer/types"
+	consumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 	"github.com/cosmos/interchain-security/x/ccv/utils"
 	"github.com/tendermint/tendermint/libs/log"
@@ -107,7 +108,7 @@ func (k Keeper) mustValidateFields() {
 }
 
 // Logger returns a module-specific logger.
-func (Keeper) Logger(ctx sdk.Context) log.Logger {
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+host.ModuleName+"-"+types.ModuleName)
 }
 
@@ -143,8 +144,8 @@ func (k Keeper) IsBound(ctx sdk.Context, portID string) bool {
 // BindPort defines a wrapper function for the ort Keeper's function in
 // order to expose it to module's InitGenesis function
 func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
-	portCap := k.portKeeper.BindPort(ctx, portID)
-	return k.ClaimCapability(ctx, portCap, host.PortPath(portID))
+	cap := k.portKeeper.BindPort(ctx, portID)
+	return k.ClaimCapability(ctx, cap, host.PortPath(portID))
 }
 
 // GetPort returns the portID for the transfer module. Used in ExportGenesis
@@ -179,11 +180,11 @@ func (k Keeper) SetProviderClientID(ctx sdk.Context, clientID string) {
 // GetProviderClientID gets the clientID for the client to the provider.
 func (k Keeper) GetProviderClientID(ctx sdk.Context) (string, bool) {
 	store := ctx.KVStore(k.storeKey)
-	clientIDBytes := store.Get(types.ProviderClientIDKey())
-	if clientIDBytes == nil {
+	clientIdBytes := store.Get(types.ProviderClientIDKey())
+	if clientIdBytes == nil {
 		return "", false
 	}
-	return string(clientIDBytes), true
+	return string(clientIdBytes), true
 }
 
 // SetProviderChannel sets the channelID for the channel to the provider.
@@ -195,11 +196,11 @@ func (k Keeper) SetProviderChannel(ctx sdk.Context, channelID string) {
 // GetProviderChannel gets the channelID for the channel to the provider.
 func (k Keeper) GetProviderChannel(ctx sdk.Context) (string, bool) {
 	store := ctx.KVStore(k.storeKey)
-	channelIDBytes := store.Get(types.ProviderChannelKey())
-	if len(channelIDBytes) == 0 {
+	channelIdBytes := store.Get(types.ProviderChannelKey())
+	if len(channelIdBytes) == 0 {
 		return "", false
 	}
-	return string(channelIDBytes), true
+	return string(channelIdBytes), true
 }
 
 // DeleteProviderChannel deletes the channelID for the channel to the provider.
@@ -243,14 +244,14 @@ func (k Keeper) DeletePendingChanges(ctx sdk.Context) {
 
 // GetElapsedPacketMaturityTimes returns a slice of already elapsed PacketMaturityTimes, sorted by maturity times,
 // i.e., the slice contains the IDs of the matured VSCPackets.
-func (k Keeper) GetElapsedPacketMaturityTimes(ctx sdk.Context) (maturingVSCPackets []types.MaturingVSCPacket) {
+func (k Keeper) GetElapsedPacketMaturityTimes(ctx sdk.Context) (maturingVSCPackets []consumertypes.MaturingVSCPacket) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{types.PacketMaturityTimeBytePrefix})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var maturingVSCPacket types.MaturingVSCPacket
+		var maturingVSCPacket consumertypes.MaturingVSCPacket
 		if err := maturingVSCPacket.Unmarshal(iterator.Value()); err != nil {
 			// An error here would indicate something is very wrong,
 			// the MaturingVSCPackets are assumed to be correctly serialized in SetPacketMaturityTime.
@@ -275,13 +276,13 @@ func (k Keeper) GetElapsedPacketMaturityTimes(ctx sdk.Context) (maturingVSCPacke
 // PacketMaturityTimeBytePrefix | maturityTime.UnixNano() | vscID
 // Thus, the returned array is in ascending order of maturityTimes.
 // If two entries have the same maturityTime, then they are ordered by vscID.
-func (k Keeper) GetAllPacketMaturityTimes(ctx sdk.Context) (maturingVSCPackets []types.MaturingVSCPacket) {
+func (k Keeper) GetAllPacketMaturityTimes(ctx sdk.Context) (maturingVSCPackets []consumertypes.MaturingVSCPacket) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{types.PacketMaturityTimeBytePrefix})
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
-		var maturingVSCPacket types.MaturingVSCPacket
+		var maturingVSCPacket consumertypes.MaturingVSCPacket
 		if err := maturingVSCPacket.Unmarshal(iterator.Value()); err != nil {
 			// An error here would indicate something is very wrong,
 			// the MaturingVSCPackets are assumed to be correctly serialized in SetPacketMaturityTime.
@@ -294,10 +295,10 @@ func (k Keeper) GetAllPacketMaturityTimes(ctx sdk.Context) (maturingVSCPackets [
 }
 
 // SetPacketMaturityTime sets the maturity time for a given received VSC packet id
-func (k Keeper) SetPacketMaturityTime(ctx sdk.Context, vscID uint64, maturityTime time.Time) {
+func (k Keeper) SetPacketMaturityTime(ctx sdk.Context, vscId uint64, maturityTime time.Time) {
 	store := ctx.KVStore(k.storeKey)
-	maturingVSCPacket := types.MaturingVSCPacket{
-		VscId:        vscID,
+	maturingVSCPacket := consumertypes.MaturingVSCPacket{
+		VscId:        vscId,
 		MaturityTime: maturityTime,
 	}
 	bz, err := maturingVSCPacket.Marshal()
@@ -306,22 +307,22 @@ func (k Keeper) SetPacketMaturityTime(ctx sdk.Context, vscID uint64, maturityTim
 		// maturingVSCPacket is instantiated in this method and should be able to be marshaled.
 		panic(fmt.Errorf("failed to marshal MaturingVSCPacket: %w", err))
 	}
-	store.Set(types.PacketMaturityTimeKey(vscID, maturityTime), bz)
+	store.Set(types.PacketMaturityTimeKey(vscId, maturityTime), bz)
 }
 
 // PacketMaturityExists checks whether the packet maturity time for a given vscId and maturityTime exists.
 //
 // Note: this method is only used in testing.
-func (k Keeper) PacketMaturityTimeExists(ctx sdk.Context, vscID uint64, maturityTime time.Time) bool {
+func (k Keeper) PacketMaturityTimeExists(ctx sdk.Context, vscId uint64, maturityTime time.Time) bool {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.PacketMaturityTimeKey(vscID, maturityTime))
+	bz := store.Get(types.PacketMaturityTimeKey(vscId, maturityTime))
 	return bz != nil
 }
 
 // DeletePacketMaturityTimes deletes the packet maturity time for a given vscId and maturityTime
-func (k Keeper) DeletePacketMaturityTimes(ctx sdk.Context, vscID uint64, maturityTime time.Time) {
+func (k Keeper) DeletePacketMaturityTimes(ctx sdk.Context, vscId uint64, maturityTime time.Time) {
 	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.PacketMaturityTimeKey(vscID, maturityTime))
+	store.Delete(types.PacketMaturityTimeKey(vscId, maturityTime))
 }
 
 // VerifyProviderChain verifies that the chain trying to connect on the channel handshake
@@ -336,22 +337,22 @@ func (k Keeper) VerifyProviderChain(ctx sdk.Context, connectionHops []string) er
 		return sdkerrors.Wrapf(conntypes.ErrConnectionNotFound, "connection not found for connection ID: %s", connectionID)
 	}
 	// Verify that client id is expected clientID
-	expectedClientID, ok := k.GetProviderClientID(ctx)
+	expectedClientId, ok := k.GetProviderClientID(ctx)
 	if !ok {
 		return sdkerrors.Wrapf(clienttypes.ErrInvalidClient, "could not find provider client id")
 	}
-	if expectedClientID != conn.ClientId {
-		return sdkerrors.Wrapf(clienttypes.ErrInvalidClient, "invalid client: %s, channel must be built on top of client: %s", conn.ClientId, expectedClientID)
+	if expectedClientId != conn.ClientId {
+		return sdkerrors.Wrapf(clienttypes.ErrInvalidClient, "invalid client: %s, channel must be built on top of client: %s", conn.ClientId, expectedClientId)
 	}
 
 	return nil
 }
 
 // SetHeightValsetUpdateID sets the valset update id for a given block height
-func (k Keeper) SetHeightValsetUpdateID(ctx sdk.Context, height, valsetUpdateID uint64) {
+func (k Keeper) SetHeightValsetUpdateID(ctx sdk.Context, height, valsetUpdateId uint64) {
 	store := ctx.KVStore(k.storeKey)
 	valBytes := make([]byte, 8)
-	binary.BigEndian.PutUint64(valBytes, valsetUpdateID)
+	binary.BigEndian.PutUint64(valBytes, valsetUpdateId)
 	store.Set(types.HeightValsetUpdateIDKey(height), valBytes)
 }
 
@@ -422,7 +423,7 @@ func (k Keeper) DeleteOutstandingDowntime(ctx sdk.Context, consAddress string) {
 // Note that the outstanding downtime flags are stored under keys with the following format:
 // OutstandingDowntimeBytePrefix | consAddress
 // Thus, the returned array is in ascending order of consAddresses.
-func (k Keeper) GetAllOutstandingDowntimes(ctx sdk.Context) (downtimes []types.OutstandingDowntime) {
+func (k Keeper) GetAllOutstandingDowntimes(ctx sdk.Context) (downtimes []consumertypes.OutstandingDowntime) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{types.OutstandingDowntimeBytePrefix})
 
@@ -431,7 +432,7 @@ func (k Keeper) GetAllOutstandingDowntimes(ctx sdk.Context) (downtimes []types.O
 		addrBytes := iterator.Key()[1:]
 		addr := sdk.ConsAddress(addrBytes).String()
 
-		downtimes = append(downtimes, types.OutstandingDowntime{
+		downtimes = append(downtimes, consumertypes.OutstandingDowntime{
 			ValidatorConsensusAddress: addr,
 		})
 	}
@@ -452,12 +453,12 @@ func (k Keeper) GetCCValidator(ctx sdk.Context, addr []byte) (validator types.Cr
 	store := ctx.KVStore(k.storeKey)
 	v := store.Get(types.CrossChainValidatorKey(addr))
 	if v == nil {
-		return validator, false
+		return
 	}
 	k.cdc.MustUnmarshal(v, &validator)
 	found = true
 
-	return validator, found
+	return
 }
 
 // DeleteCCValidator deletes a cross-chain validator for a given address

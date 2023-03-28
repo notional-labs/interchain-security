@@ -7,9 +7,9 @@ import (
 )
 
 // Tests the tracking of historical info in the context of new blocks being committed
-func (s CCVTestSuite) TestHistoricalInfo() {
-	consumerKeeper := s.consumerApp.GetConsumerKeeper()
-	cCtx := s.consumerChain.GetContext
+func (k CCVTestSuite) TestHistoricalInfo() {
+	consumerKeeper := k.consumerApp.GetConsumerKeeper()
+	cCtx := k.consumerChain.GetContext
 
 	// save init consumer valset length
 	initValsetLen := len(consumerKeeper.GetAllCCValidator(cCtx()))
@@ -18,16 +18,16 @@ func (s CCVTestSuite) TestHistoricalInfo() {
 
 	// define an utility function that creates a new cross-chain validator
 	// and then call track historical info in the next block
-	createVal := func(s CCVTestSuite) {
+	createVal := func(k CCVTestSuite) {
 		// add new validator to consumer states
 		pk := ed25519.GenPrivKey().PubKey()
 		cVal, err := consumertypes.NewCCValidator(pk.Address(), int64(1), pk)
-		s.Require().NoError(err)
+		k.Require().NoError(err)
 
-		consumerKeeper.SetCCValidator(s.consumerChain.GetContext(), cVal)
+		consumerKeeper.SetCCValidator(k.consumerChain.GetContext(), cVal)
 
 		// commit block in order to call TrackHistoricalInfo
-		s.consumerChain.NextBlock()
+		k.consumerChain.NextBlock()
 	}
 
 	// testsetup create 2 validators and then call track historical info with header block height
@@ -37,20 +37,20 @@ func (s CCVTestSuite) TestHistoricalInfo() {
 	testSetup := []func(CCVTestSuite){
 		createVal,
 		createVal,
-		func(s CCVTestSuite) {
-			historicalEntries := s.consumerApp.GetConsumerKeeper().GetHistoricalEntries(s.consumerCtx())
-			newHeight := s.consumerChain.GetContext().BlockHeight() + historicalEntries
+		func(k CCVTestSuite) {
+			historicalEntries := k.consumerApp.GetConsumerKeeper().GetHistoricalEntries(k.consumerCtx())
+			newHeight := k.consumerChain.GetContext().BlockHeight() + historicalEntries
 			header := tmproto.Header{
 				ChainID: "HelloChain",
 				Height:  newHeight,
 			}
-			ctx := s.consumerChain.GetContext().WithBlockHeader(header)
+			ctx := k.consumerChain.GetContext().WithBlockHeader(header)
 			consumerKeeper.TrackHistoricalInfo(ctx)
 		},
 	}
 
 	for _, ts := range testSetup {
-		ts(s)
+		ts(k)
 	}
 
 	// test cases verify that historical info entries are pruned when their height
@@ -71,7 +71,7 @@ func (s CCVTestSuite) TestHistoricalInfo() {
 			expLen: 0,
 		},
 		{
-			height: initHeight + consumertypes.DefaultHistoricalEntries + 2,
+			height: initHeight + int64(consumertypes.DefaultHistoricalEntries) + 2,
 			found:  true,
 			expLen: initValsetLen + 2,
 		},
@@ -80,7 +80,7 @@ func (s CCVTestSuite) TestHistoricalInfo() {
 	for _, tc := range testCases {
 		cCtx().WithBlockHeight(tc.height)
 		hi, found := consumerKeeper.GetHistoricalInfo(cCtx().WithBlockHeight(tc.height), tc.height)
-		s.Require().Equal(tc.found, found)
-		s.Require().Len(hi.Valset, tc.expLen)
+		k.Require().Equal(tc.found, found)
+		k.Require().Len(hi.Valset, tc.expLen)
 	}
 }

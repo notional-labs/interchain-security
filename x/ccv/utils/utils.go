@@ -101,7 +101,7 @@ func AppendMany(byteses ...[]byte) (out []byte) {
 	return out
 }
 
-func PanicIfZeroOrNil(x any, nameForPanicMsg string) {
+func PanicIfZeroOrNil(x interface{}, nameForPanicMsg string) {
 	if x == nil || reflect.ValueOf(x).IsZero() {
 		panic("zero or nil value for " + nameForPanicMsg)
 	}

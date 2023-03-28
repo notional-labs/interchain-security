@@ -7,12 +7,12 @@ import (
 
 // RegisterLegacyAminoCodec registers the necessary x/ibc transfer interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
-func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 }
 
 // RegisterInterfaces register the ibc transfer module interfaces to protobuf
 // Any.
-func RegisterInterfaces(_ codectypes.InterfaceRegistry) {
+func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 }
 
 var (

@@ -66,10 +66,10 @@ func (cccp *ConsumerAdditionProposal) GetTitle() string { return cccp.Title }
 func (cccp *ConsumerAdditionProposal) GetDescription() string { return cccp.Description }
 
 // ProposalRoute returns the routing key of a consumer addition proposal.
-func (*ConsumerAdditionProposal) ProposalRoute() string { return RouterKey }
+func (cccp *ConsumerAdditionProposal) ProposalRoute() string { return RouterKey }
 
 // ProposalType returns the type of a consumer addition proposal.
-func (*ConsumerAdditionProposal) ProposalType() string {
+func (cccp *ConsumerAdditionProposal) ProposalType() string {
 	return ProposalTypeConsumerAddition
 }
 
@@ -167,10 +167,10 @@ func NewConsumerRemovalProposal(title, description, chainID string, stopTime tim
 }
 
 // ProposalRoute returns the routing key of a consumer removal proposal.
-func (*ConsumerRemovalProposal) ProposalRoute() string { return RouterKey }
+func (sccp *ConsumerRemovalProposal) ProposalRoute() string { return RouterKey }
 
 // ProposalType returns the type of a consumer removal proposal.
-func (*ConsumerRemovalProposal) ProposalType() string { return ProposalTypeConsumerRemoval }
+func (sccp *ConsumerRemovalProposal) ProposalType() string { return ProposalTypeConsumerRemoval }
 
 // ValidateBasic runs basic stateless validity checks
 func (sccp *ConsumerRemovalProposal) ValidateBasic() error {
@@ -198,10 +198,10 @@ func NewEquivocationProposal(title, description string, equivocations []*evidenc
 }
 
 // ProposalRoute returns the routing key of an equivocation  proposal.
-func (*EquivocationProposal) ProposalRoute() string { return RouterKey }
+func (sp *EquivocationProposal) ProposalRoute() string { return RouterKey }
 
 // ProposalType returns the type of a equivocation proposal.
-func (*EquivocationProposal) ProposalType() string {
+func (sp *EquivocationProposal) ProposalType() string {
 	return ProposalTypeEquivocation
 }
 

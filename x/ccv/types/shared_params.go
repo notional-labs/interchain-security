@@ -15,7 +15,7 @@ const (
 
 var KeyCCVTimeoutPeriod = []byte("CcvTimeoutPeriod")
 
-func ValidateDuration(i any) error {
+func ValidateDuration(i interface{}) error {
 	period, ok := i.(time.Duration)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
@@ -26,21 +26,21 @@ func ValidateDuration(i any) error {
 	return nil
 }
 
-func ValidateBool(i any) error {
+func ValidateBool(i interface{}) error {
 	if _, ok := i.(bool); !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	return nil
 }
 
-func ValidateInt64(i any) error {
+func ValidateInt64(i interface{}) error {
 	if _, ok := i.(int64); !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	return nil
 }
 
-func ValidatePositiveInt64(i any) error {
+func ValidatePositiveInt64(i interface{}) error {
 	if err := ValidateInt64(i); err != nil {
 		return err
 	}
@@ -50,14 +50,14 @@ func ValidatePositiveInt64(i any) error {
 	return nil
 }
 
-func ValidateString(i any) error {
+func ValidateString(i interface{}) error {
 	if _, ok := i.(string); !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	return nil
 }
 
-func ValidateChannelIdentifier(i any) error {
+func ValidateChannelIdentifier(i interface{}) error {
 	value, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
@@ -65,7 +65,7 @@ func ValidateChannelIdentifier(i any) error {
 	return ibchost.ChannelIdentifierValidator(value)
 }
 
-func ValidateBech32(i any) error {
+func ValidateBech32(i interface{}) error {
 	value, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
@@ -74,7 +74,7 @@ func ValidateBech32(i any) error {
 	return err
 }
 
-func ValidateStringFraction(i any) error {
+func ValidateStringFraction(i interface{}) error {
 	str, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
