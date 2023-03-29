@@ -7,8 +7,6 @@ package ibc_testing
 import (
 	"encoding/json"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
-
 	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -23,7 +21,7 @@ import (
 func ProviderAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	encoding := appProvider.MakeTestEncodingConfig()
 	testApp := appProvider.New(log.NewNopLogger(), tmdb.NewMemDB(), nil, true, map[int64]bool{},
-		simapp.DefaultNodeHome, 5, encoding, simapp.EmptyAppOptions{})
+		appProvider.DefaultNodeHome, 5, encoding, appProvider.EmptyAppOptions{})
 	return testApp, appProvider.NewDefaultGenesisState(encoding.Codec)
 }
 
@@ -31,7 +29,7 @@ func ProviderAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 func ConsumerAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	encoding := appConsumer.MakeTestEncodingConfig()
 	testApp := appConsumer.New(log.NewNopLogger(), tmdb.NewMemDB(), nil, true, map[int64]bool{},
-		simapp.DefaultNodeHome, 5, encoding, simapp.EmptyAppOptions{})
+		appConsumer.DefaultNodeHome, 5, encoding, appConsumer.EmptyAppOptions{})
 	return testApp, appConsumer.NewDefaultGenesisState(encoding.Codec)
 }
 
@@ -39,6 +37,6 @@ func ConsumerAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 func DemocracyConsumerAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	encoding := appConsumerDemocracy.MakeTestEncodingConfig()
 	testApp := appConsumerDemocracy.New(log.NewNopLogger(), tmdb.NewMemDB(), nil, true, map[int64]bool{},
-		simapp.DefaultNodeHome, 5, encoding, simapp.EmptyAppOptions{})
+		appConsumerDemocracy.DefaultNodeHome, 5, encoding, appConsumerDemocracy.EmptyAppOptions{})
 	return testApp, appConsumerDemocracy.NewDefaultGenesisState(encoding.Codec)
 }
