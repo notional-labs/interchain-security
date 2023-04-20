@@ -2,6 +2,7 @@ package testing
 
 import (
 	"bytes"
+	"encoding/hex"
 	"fmt"
 	"testing"
 	"time"
@@ -275,10 +276,18 @@ func GetSentPacketKey(sequence uint64, channelID string) string {
 
 // GetSentPacket returns the sent packet with `sequence` (if any),
 // reconstructed from emitted events of type SendPacketEvent
-func (chain *TestChain) GetSentPacket(sequence uint64, channelID string) (packet channeltypes.Packet, found bool) {
+func (chain *TestChain) GetSentPacket(sequence uint64, channelID string) (packet channeltypes.Packet, found bool, err error) {
 	sentPacketKey := GetSentPacketKey(sequence, channelID)
 	packet, found = chain.SentPackets[sentPacketKey]
-	return packet, found
+
+	// packet data is stored in hex format in SentPackets map, but is asserted in json format
+	jsonBytes, err := hex.DecodeString(string(packet.Data))
+	if err != nil {
+		return channeltypes.Packet{}, true, err
+	}
+
+	packet.Data = jsonBytes
+	return packet, found, nil
 }
 
 // setSentPacketsFromEvents stores the sent packet reconstructed

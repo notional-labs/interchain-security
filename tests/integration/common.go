@@ -252,13 +252,14 @@ func relayAllCommittedPackets(
 	// relay all packets from srcChain to counterparty
 	for _, commitment := range commitments {
 		// - get packets
-		packet, found := srcChain.GetSentPacket(commitment.Sequence, srcChannelID)
+		packet, found, err := srcChain.GetSentPacket(commitment.Sequence, srcChannelID)
+		s.Require().NoError(err)
 		s.Require().True(
 			found,
 			fmt.Sprintf("did not find sent packet; %s", msgAndArgs...),
 		)
 		// - relay the packet
-		err := path.RelayPacket(packet)
+		err = path.RelayPacket(packet)
 		s.Require().NoError(
 			err,
 			fmt.Sprintf("error while relaying packets; %s", msgAndArgs...),

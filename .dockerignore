@@ -6,6 +6,7 @@ Dockerfile
 *.md
 .gitignore
 .gitattributes
+scripts/
 .vscode/
 .github/
 proto/
