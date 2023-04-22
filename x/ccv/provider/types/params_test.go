@@ -23,7 +23,7 @@ func TestValidateParams(t *testing.T) {
 			time.Second*40, clienttypes.Height{}, commitmenttypes.GetSDKSpecs(), []string{"ibc", "upgradedIBCState"}),
 			"0.33", time.Hour, time.Hour, time.Hour, 30*time.Minute, "0.1", 100), true},
 		{"custom invalid params", types.NewParams(ibctmtypes.NewClientState("", ibctmtypes.DefaultTrustLevel, 0, 0,
-			0, clienttypes.Height{}, nil, []string{"ibc", "upgradedIBCState"}, true, false),
+			0, clienttypes.Height{}, nil, []string{"ibc", "upgradedIBCState"}),
 			"0.33", time.Hour, time.Hour, time.Hour, 30*time.Minute, "0.1", 100), false},
 		{"blank client", types.NewParams(&ibctmtypes.ClientState{},
 			"0.33", time.Hour, time.Hour, time.Hour, 30*time.Minute, "0.1", 100), false},

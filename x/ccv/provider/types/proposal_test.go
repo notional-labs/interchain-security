@@ -12,7 +12,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
@@ -219,7 +218,7 @@ func TestMarshalConsumerAdditionProposal(t *testing.T) {
 	// create codec
 	ir := codectypes.NewInterfaceRegistry()
 	types.RegisterInterfaces(ir)
-	govtypes.RegisterInterfaces(ir)
+	v1beta1.RegisterInterfaces(ir)
 	clienttypes.RegisterInterfaces(ir)
 	ibctmtypes.RegisterInterfaces(ir)
 	cdc := codec.NewProtoCodec(ir)
@@ -281,7 +280,7 @@ func TestConsumerAdditionProposalString(t *testing.T) {
 func TestEquivocationProposalValidateBasic(t *testing.T) {
 	tests := []struct {
 		name          string
-		proposal      govtypes.Content
+		proposal      v1beta1.Content
 		expectedError string
 	}{
 		{

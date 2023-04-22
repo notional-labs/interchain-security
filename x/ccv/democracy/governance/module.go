@@ -55,7 +55,7 @@ func (am AppModule) EndBlock(ctx sdk.Context, request abci.RequestEndBlock) []ab
 }
 
 func deleteForbiddenProposal(ctx sdk.Context, am AppModule, proposal v1.Proposal) {
-	if am.isProposalWhitelisted(proposal.Content) {
+	if am.isProposalWhitelisted(proposal.Messages) {
 		return
 	}
 	// delete the votes related to the proposal calling Tally
@@ -78,7 +78,7 @@ func deleteForbiddenProposal(ctx sdk.Context, am AppModule, proposal v1.Proposal
 	logger := am.keeper.Logger(ctx)
 	logger.Info(
 		"proposal is not whitelisted; deleted",
-		"proposal", proposal.ProposalId,
+		"proposal", proposal.Id,
 		"title", proposal.GetTitle(),
-		"total_deposit", proposal.TotalDeposit.String())
+		"total_deposit", proposal.TotalDeposit)
 }

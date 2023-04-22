@@ -7,12 +7,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	testkeeper "github.com/cosmos/interchain-security/testutil/keeper"
 	"github.com/cosmos/interchain-security/x/ccv/provider"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
@@ -28,7 +28,7 @@ func TestProviderProposalHandler(t *testing.T) {
 
 	testCases := []struct {
 		name                     string
-		content                  govtypes.Content
+		content                  v1beta1.Content
 		blockTime                time.Time
 		expValidConsumerAddition bool
 		expValidConsumerRemoval  bool
