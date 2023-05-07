@@ -252,6 +252,19 @@ func (tr TestRun) submitConsumerAdditionProposal(
 		log.Fatal(err, "\n", string(bz))
 	}
 
+	str := []byte(exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[action.chain].binaryName,
+		"tx", "gov", "submit-legacy-proposal", "consumer-additon", "/temp-proposal.json",
+		`--from`, `validator`+fmt.Sprint(action.from),
+		`--type`, action.propType,
+		`--chain-id`, string(tr.chainConfigs[action.chain].chainId),
+		`--home`, tr.getValidatorHome(action.chain, action.from),
+		`--gas`, `900000`,
+		`--node`, tr.getValidatorNode(action.chain, action.from),
+		`--keyring-backend`, `test`,
+		`-b`, `block`,
+		`-y`,
+	).String())
+	fmt.Println(str)
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
 	// CONSUMER ADDITION PROPOSAL
 	bz, err = exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[action.chain].binaryName,
@@ -385,9 +398,7 @@ func (tr TestRun) submitParamChangeProposal(
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
 	// PARAM CHANGE PROPOSAL // we should be able to make these all one command which will be cool
 	bz, err = exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[action.chain].binaryName,
-
 		"tx", "gov", "submit-legacy-proposal", "param-change", "/params-proposal.json",
-
 		`--from`, `validator`+fmt.Sprint(action.from),
 		`--chain-id`, string(tr.chainConfigs[action.chain].chainId),
 		`--home`, tr.getValidatorHome(action.chain, action.from),
