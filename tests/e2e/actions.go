@@ -252,7 +252,7 @@ func (tr TestRun) submitConsumerAdditionProposal(
 		log.Fatal(err, "\n", string(bz))
 	}
 
-	str := []byte(exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[action.chain].binaryName,
+	str := exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[action.chain].binaryName,
 		"tx", "gov", "submit-legacy-proposal", "consumer-additon", "/temp-proposal.json",
 		`--from`, `validator`+fmt.Sprint(action.from),
 		`--type`, action.propType,
@@ -263,7 +263,7 @@ func (tr TestRun) submitConsumerAdditionProposal(
 		`--keyring-backend`, `test`,
 		`-b`, `block`,
 		`-y`,
-	).String())
+	).String()
 	fmt.Println(str)
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
 	// CONSUMER ADDITION PROPOSAL
