@@ -262,6 +262,9 @@ func (tr TestRun) submitConsumerAdditionProposal(
 		`-b`, `async`,
 		`-y`,
 	).CombinedOutput()
+	fmt.Println(string(bz))
+
+	exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[action.chain].binaryName, "q", "tx", string(bz))
 
 	if err != nil {
 		log.Fatal(err, "\n", string(bz))
