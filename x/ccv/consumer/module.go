@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -99,6 +99,12 @@ func NewAppModule(k keeper.Keeper, paramSpace paramtypes.Subspace) AppModule {
 	}
 }
 
+func (am AppModule) IsOnePerModuleType() {
+}
+
+func (am AppModule) IsAppModule() {
+}
+
 // RegisterInvariants implements the AppModule interface
 func (AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
 	// TODO
@@ -137,7 +143,7 @@ func (AppModule) ConsensusVersion() uint64 {
 // BeginBlock implements the AppModule interface
 // Set the VSC ID for the subsequent block to the same value as the current block
 // Panic if the provider's channel was established and then closed
-func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
+func (am AppModule) BeginBlock(ctx sdk.Context) {
 	// Execute BeginBlock logic for the Soft Opt-Out sub-protocol
 	am.keeper.BeginBlockSoftOptOut(ctx)
 
@@ -162,7 +168,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
 // Flush PendingChanges to ABCI, send pending packets, write acknowledgements for packets that have finished unbonding.
 //
 // TODO: e2e tests confirming behavior with and without standalone -> consumer changeover
-func (am AppModule) EndBlock(ctx sdk.Context, req abci.RequestEndBlock) []abci.ValidatorUpdate {
+func (am AppModule) EndBlock(ctx sdk.Context) []abci.ValidatorUpdate {
 	// If PreCCV state is active, consumer is a previously standalone chain
 	// that was just upgraded to include the consumer ccv module, execute changeover logic.
 	if am.keeper.IsPreCCV(ctx) {
@@ -202,7 +208,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 
 // RegisterStoreDecoder registers a decoder for consumer module's types
 // TODO
-func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+func (am AppModule) RegisterStoreDecoder() {
 }
 
 // WeightedOperations returns the all the consumer module operations with their respective weights.

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	sdkmath "cosmossdk.io/math"
 
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -115,14 +116,14 @@ func (k Keeper) ValidatorByConsAddr(sdk.Context, sdk.ConsAddress) stakingtypes.V
 // Calls SlashWithInfractionReason with Infraction_INFRACTION_UNSPECIFIED.
 // ConsumerKeeper must implement StakingKeeper interface.
 // This function should not be called anywhere
-func (k Keeper) Slash(ctx sdk.Context, addr sdk.ConsAddress, infractionHeight, power int64, slashFactor sdk.Dec) math.Int {
+func (k Keeper) Slash(ctx sdk.Context, addr sdk.ConsAddress, infractionHeight, power int64, slashFactor sdkmath.LegacyDec) math.Int {
 	return k.SlashWithInfractionReason(ctx, addr, infractionHeight, power, slashFactor, stakingtypes.Infraction_INFRACTION_UNSPECIFIED)
 }
 
 // Slash queues a slashing request for the the provider chain
 // All queued slashing requests will be cleared in EndBlock
 // Called by Slashing keeper in SlashWithInfractionReason
-func (k Keeper) SlashWithInfractionReason(ctx sdk.Context, addr sdk.ConsAddress, infractionHeight, power int64, slashFactor sdk.Dec, infraction stakingtypes.Infraction) math.Int {
+func (k Keeper) SlashWithInfractionReason(ctx sdk.Context, addr sdk.ConsAddress, infractionHeight, power int64, slashFactor sdkmath.LegacyDec, infraction stakingtypes.Infraction) math.Int {
 	if infraction == stakingtypes.Infraction_INFRACTION_UNSPECIFIED {
 		return math.NewInt(0)
 	}
@@ -259,7 +260,7 @@ func (k Keeper) TrackHistoricalInfo(ctx sdk.Context) {
 	}
 
 	// Create HistoricalInfo struct
-	lastVals := []stakingtypes.Validator{}
+	lastVals := stakingtypes.Validators{}
 	for _, v := range k.GetAllCCValidator(ctx) {
 		pk, err := v.ConsPubKey()
 		if err != nil {
@@ -278,7 +279,7 @@ func (k Keeper) TrackHistoricalInfo(ctx sdk.Context) {
 		val.Status = stakingtypes.Bonded
 		// Compute tokens from voting power
 		val.Tokens = sdk.TokensFromConsensusPower(v.Power, sdk.DefaultPowerReduction)
-		lastVals = append(lastVals, val)
+		lastVals.Validators = append(lastVals.Validators, val)
 	}
 
 	// Create historical info entry which sorts the validator set by voting power
