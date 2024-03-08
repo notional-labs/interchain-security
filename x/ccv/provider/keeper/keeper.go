@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	"reflect"
 	"time"
 
@@ -27,7 +28,6 @@ import (
 
 	"cosmossdk.io/log"
 
-	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	consumertypes "github.com/cosmos/interchain-security/v3/x/ccv/consumer/types"
 	"github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 	ccv "github.com/cosmos/interchain-security/v3/x/ccv/types"
@@ -122,8 +122,8 @@ func (k Keeper) ConsensusAddressCodec() addresscodec.Codec {
 // non-nil values for all its fields. Otherwise this method will panic.
 func (k Keeper) mustValidateFields() {
 	// Ensures no fields are missed in this validation
-	if reflect.ValueOf(k).NumField() != 17 {
-		panic("number of fields in provider keeper is not 17")
+	if reflect.ValueOf(k).NumField() != 18 {
+		panic("number of fields in provider keeper is not 18")
 	}
 
 	// TODO: @MSalopek -> validate once connected and AccountKeeper interface is updated
@@ -153,7 +153,6 @@ func (k Keeper) mustValidateFields() {
 	ccv.PanicIfZeroOrNil(k.validatorAddressCodec, "validatorAddressCodec") // 15
 	ccv.PanicIfZeroOrNil(k.consensusAddressCodec, "consensusAddressCodec") // 16
 	ccv.PanicIfZeroOrNil(k.govKeeper, "govKeeper")                         // 17
-
 	// TODO: @MSalopek -> validate once connected
 	// ccv.PanicIfZeroOrNil(k.storeService, "storeService")                   // 17
 }

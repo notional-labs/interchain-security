@@ -77,7 +77,7 @@ func TestAssignConsensusKeyForConsumerChain(t *testing.T) {
 					mocks.MockStakingKeeper.EXPECT().GetValidator(
 						ctx, providerCryptoId.SDKValOpAddress(),
 						// Return a valid validator, found!
-					).Return(providerCryptoId.SDKStakingValidator(), true).Times(1),
+					).Return(providerCryptoId.SDKStakingValidator(), nil).Times(1),
 				)
 			},
 			expError: true,
@@ -114,7 +114,7 @@ func TestAssignConsensusKeyForConsumerChain(t *testing.T) {
 				gomock.InOrder(
 					mocks.MockStakingKeeper.EXPECT().GetValidator(
 						ctx, providerCryptoId.SDKValOpAddress(),
-					// Return a valid validator; without any errors
+						// Return a valid validator; without any errors
 					).Return(providerCryptoId.SDKStakingValidator(), nil).Times(1),
 					mocks.MockStakingKeeper.EXPECT().GetValidatorByConsAddr(ctx,
 						consumerConsAddr.ToSdkConsAddr(),

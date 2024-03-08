@@ -3,6 +3,7 @@ package keeper
 import (
 	"crypto/rand"
 	"encoding/binary"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	"testing"
 	"time"
 
@@ -92,7 +93,6 @@ type MockedKeepers struct {
 	*MockIBCTransferKeeper
 	*MockIBCCoreKeeper
 	*MockDistributionKeeper
-	*MockGovKeeper
 }
 
 // NewMockedKeepers instantiates a struct with pointers to properly instantiated mocked keepers.
@@ -110,7 +110,6 @@ func NewMockedKeepers(ctrl *gomock.Controller) MockedKeepers {
 		MockIBCTransferKeeper:  NewMockIBCTransferKeeper(ctrl),
 		MockIBCCoreKeeper:      NewMockIBCCoreKeeper(ctrl),
 		MockDistributionKeeper: NewMockDistributionKeeper(ctrl),
-		MockGovKeeper:          NewMockGovKeeper(ctrl),
 	}
 }
 
@@ -130,7 +129,7 @@ func NewInMemProviderKeeper(params InMemKeeperParams, mocks MockedKeepers) provi
 		mocks.MockAccountKeeper,
 		mocks.MockDistributionKeeper,
 		mocks.MockBankKeeper,
-		mocks.MockGovKeeper,
+		govkeeper.Keeper{},
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		address.NewBech32Codec("cosmosvaloper"),
 		address.NewBech32Codec("cosmosvalcons"),
