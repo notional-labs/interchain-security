@@ -6,6 +6,8 @@ package keeper
 
 import (
 	context "context"
+	storetypes "cosmossdk.io/store/types"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	reflect "reflect"
 	time "time"
 
@@ -122,11 +124,12 @@ func (mr *MockStakingKeeperMockRecorder) GetLastValidators(ctx interface{}) *gom
 }
 
 // GetRedelegationsFromSrcValidator mocks base method.
-func (m *MockStakingKeeper) GetRedelegationsFromSrcValidator(ctx types0.Context, valAddr types0.ValAddress) []types4.Redelegation {
+func (m *MockStakingKeeper) GetRedelegationsFromSrcValidator(ctx context.Context, valAddr types0.ValAddress) ([]types2.Redelegation, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRedelegationsFromSrcValidator", ctx, valAddr)
-	ret0, _ := ret[0].([]types4.Redelegation)
-	return ret0
+	ret0, _ := ret[0].([]types2.Redelegation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetRedelegationsFromSrcValidator indicates an expected call of GetRedelegationsFromSrcValidator.
@@ -136,11 +139,12 @@ func (mr *MockStakingKeeperMockRecorder) GetRedelegationsFromSrcValidator(ctx, v
 }
 
 // GetUnbondingDelegationsFromValidator mocks base method.
-func (m *MockStakingKeeper) GetUnbondingDelegationsFromValidator(ctx types0.Context, valAddr types0.ValAddress) []types4.UnbondingDelegation {
+func (m *MockStakingKeeper) GetUnbondingDelegationsFromValidator(ctx context.Context, valAddr types0.ValAddress) ([]types2.UnbondingDelegation, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUnbondingDelegationsFromValidator", ctx, valAddr)
-	ret0, _ := ret[0].([]types4.UnbondingDelegation)
-	return ret0
+	ret0, _ := ret[0].([]types2.UnbondingDelegation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetUnbondingDelegationsFromValidator indicates an expected call of GetUnbondingDelegationsFromValidator.
@@ -325,11 +329,12 @@ func (mr *MockStakingKeeperMockRecorder) Slash(ctx, consAddr, infractionHeight, 
 }
 
 // SlashRedelegation mocks base method.
-func (m *MockStakingKeeper) SlashRedelegation(arg0 types0.Context, arg1 types4.Validator, arg2 types4.Redelegation, arg3 int64, arg4 types0.Dec) math.Int {
+func (m *MockStakingKeeper) SlashRedelegation(arg0 context.Context, arg1 types2.Validator, arg2 types2.Redelegation, arg3 int64, arg4 math.LegacyDec) (math.Int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SlashRedelegation", arg0, arg1, arg2, arg3, arg4)
 	ret0, _ := ret[0].(math.Int)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // SlashRedelegation indicates an expected call of SlashRedelegation.
@@ -339,11 +344,12 @@ func (mr *MockStakingKeeperMockRecorder) SlashRedelegation(arg0, arg1, arg2, arg
 }
 
 // SlashUnbondingDelegation mocks base method.
-func (m *MockStakingKeeper) SlashUnbondingDelegation(arg0 types0.Context, arg1 types4.UnbondingDelegation, arg2 int64, arg3 types0.Dec) math.Int {
+func (m *MockStakingKeeper) SlashUnbondingDelegation(arg0 context.Context, arg1 types2.UnbondingDelegation, arg2 int64, arg3 math.LegacyDec) (math.Int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SlashUnbondingDelegation", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(math.Int)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // SlashUnbondingDelegation indicates an expected call of SlashUnbondingDelegation.
@@ -776,10 +782,10 @@ func (m *MockClientKeeper) EXPECT() *MockClientKeeperMockRecorder {
 }
 
 // ClientStore mocks base method.
-func (m *MockClientKeeper) ClientStore(ctx types0.Context, clientID string) types0.KVStore {
+func (m *MockClientKeeper) ClientStore(ctx types0.Context, clientID string) storetypes.KVStore {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ClientStore", ctx, clientID)
-	ret0, _ := ret[0].(types0.KVStore)
+	ret0, _ := ret[0].(storetypes.KVStore)
 	return ret0
 }
 

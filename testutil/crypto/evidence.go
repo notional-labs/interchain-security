@@ -37,13 +37,16 @@ func MakeAndSignVote(
 	chainID string,
 ) *tmtypes.Vote {
 	vote, err := tmtypes.MakeVote(
-		blockHeight,
-		blockID,
-		valSet,
 		signer,
 		chainID,
+		0,
+		blockHeight,
+		0,
+		2,
+		blockID,
 		blockTime,
 	)
+
 	if err != nil {
 		panic(err)
 	}
@@ -71,11 +74,13 @@ func MakeAndSignVoteWithForgedValAddress(
 ) *tmtypes.Vote {
 	// create the vote using a different key than the signing key
 	vote, err := tmtypes.MakeVote(
-		blockHeight,
-		blockID,
-		valSet,
-		valAddressSigner,
+		signer,
 		chainID,
+		0,
+		blockHeight,
+		0,
+		2,
+		blockID,
 		blockTime,
 	)
 	if err != nil {

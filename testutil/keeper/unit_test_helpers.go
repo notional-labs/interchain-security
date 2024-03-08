@@ -131,10 +131,10 @@ func NewInMemProviderKeeper(params InMemKeeperParams, mocks MockedKeepers) provi
 		mocks.MockDistributionKeeper,
 		mocks.MockBankKeeper,
 		mocks.MockGovKeeper,
-		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		address.NewBech32Codec("cosmosvaloper"),
 		address.NewBech32Codec("cosmosvalcons"),
+		authtypes.FeeCollectorName,
 	)
 }
 
